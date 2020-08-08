@@ -1,6 +1,6 @@
 #include "Skeleton.h"
 #include <iostream>
-
+/*
 const aiBone* FindAssimpBone(const std::string& name, const aiMesh& mesh)
 {
 	for (unsigned int i = 0; i < mesh.mNumBones; i++)
@@ -28,7 +28,7 @@ const aiNode* FindAssimpNode(const std::string& name, const aiNode& root)
 	else
 		return nullptr;
 		
-}
+}*/
 /*
 static glm::mat4 AiToGLMMat4(const aiMatrix4x4& in_mat)
 {
@@ -54,7 +54,7 @@ static glm::mat4 AiToGLMMat4(const aiMatrix4x4& in_mat)
 	tmp[3][3] = (float)in_mat.d4;
 	return tmp;
 }*/
-
+/*
 void Skeleton::SkeletonFromAssimp(const aiNode* node, std::unordered_map<std::string, bool>& necessityMap, Bone* parentBone, const aiMesh* mesh)
 {
 	Bone* currentBone = parentBone;
@@ -72,7 +72,7 @@ void Skeleton::SkeletonFromAssimp(const aiNode* node, std::unordered_map<std::st
 	for (unsigned int i = 0; i < node->mNumChildren; i++)
 		SkeletonFromAssimp(node->mChildren[i], necessityMap, currentBone, mesh);
 }
-
+*/
 Skeleton::Skeleton(const std::string& filePath)
 {
 	m_rootBone = new Bone();

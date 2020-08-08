@@ -1,4 +1,3 @@
--- OpenGL-Sandbox
 workspace "rtt"
 	architecture "x64"
 	startproject "rtt"
@@ -71,8 +70,7 @@ project "rtt"
 		"GLFW",
 		"Glad",
 		"ImGui",
-		"opengl32.lib",
-		"vendor/assimp/lib/assimp-vc142-mt.lib"
+		"opengl32.lib"
 	}
 
 	filter "system:windows"
@@ -80,16 +78,16 @@ project "rtt"
 
 		defines
 		{
-			"BASEGL_PLATFORM_WINDOWS",
+			"RTT_PLATFORM_WINDOWS",
 			"GLFW_INCLUDE_NONE"
 		}
 
 	filter "configurations:Debug"
-		defines "BASEGL_DEBUG"
+		defines "RTT_DEBUG"
 		runtime "Debug"
 		symbols "on"
 
 	filter "configurations:Release"
-		defines "BASEGL_RELEASE"
+		defines "RTT_RELEASE"
 		runtime "Release"
 		optimize "on"

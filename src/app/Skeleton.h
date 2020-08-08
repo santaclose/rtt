@@ -2,9 +2,9 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
+//#include <assimp/Importer.hpp>
+//#include <assimp/scene.h>
+//#include <assimp/postprocess.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -16,9 +16,9 @@ public:
 	Bone* m_rootBone;
 
 private:
-	void ComputePoseTransformations(Bone* root);
+	//void ComputePoseTransformations(Bone* root);
 	void FreeBones(Bone* root);
-	void SkeletonFromAssimp(const aiNode* node, std::unordered_map<std::string, bool>& necessityMap, Bone* parentBone, const aiMesh* mesh);
+	//void SkeletonFromAssimp(const aiNode* node, std::unordered_map<std::string, bool>& necessityMap, Bone* parentBone, const aiMesh* mesh);
 
 public:
 	Skeleton(const std::string& filePath);
