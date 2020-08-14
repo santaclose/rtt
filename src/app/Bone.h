@@ -1,5 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include <string>
 #include <vector>
 
@@ -10,6 +11,8 @@ struct Bone
 	Bone* parent = nullptr;
 	std::vector<Bone*> children;
 
-	glm::mat4 offsetMatrix = glm::mat4(1.0f);
-	glm::mat4 animOffsetMatrix = glm::mat4(1.0f);
+	float size;
+	glm::fquat rotation;
+
+	glm::mat4 GetMatrix() const;
 };

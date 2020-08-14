@@ -43,6 +43,8 @@ int main()
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Failed to initialize GLAD" << std::endl;
+		glfwDestroyWindow(window);
+		glfwTerminate();
 		return -1;
 	}
 	glViewport(0, 0, windowWidth, windowHeight);

@@ -15,13 +15,6 @@ workspace "rtt"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
-IncludeDir = {}
-IncludeDir["GLFW"] = "vendor/GLFW/include"
-IncludeDir["Glad"] = "vendor/Glad/include"
-IncludeDir["ImGui"] = "vendor/imgui"
-IncludeDir["glm"] = "vendor/glm"
-IncludeDir["stb_image"] = "vendor/stb_image"
-
 -- Projects
 group "Dependencies"
 	include "vendor/GLFW"
@@ -57,12 +50,17 @@ project "rtt"
 	{
 		"src",
 		"vendor/spdlog/include",
-		"vendor/assimp/include",
-		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.Glad}",
-		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.stb_image}"
+		"vendor/GLFW/include",
+		"vendor/Glad/include",
+		"vendor/imgui",
+		"vendor/glm",
+		"vendor/stb_image",
+		"vendor/assimp/include"
+	}
+
+	libdirs
+	{
+		"vendor/assimp/lib"
 	}
 
 	links 
@@ -86,8 +84,16 @@ project "rtt"
 		defines "RTT_DEBUG"
 		runtime "Debug"
 		symbols "on"
+		links
+		{
+			"assimp-vc140-mtd"
+		}
 
 	filter "configurations:Release"
 		defines "RTT_RELEASE"
 		runtime "Release"
 		optimize "on"
+		links
+		{
+			"assimp-vc140-mt"
+		}

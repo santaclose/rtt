@@ -1,109 +1,96 @@
 #include "Skeleton.h"
 #include <iostream>
-/*
-const aiBone* FindAssimpBone(const std::string& name, const aiMesh& mesh)
-{
-	for (unsigned int i = 0; i < mesh.mNumBones; i++)
-	{
-		if (mesh.mBones[i]->mName.data == name)
-			return mesh.mBones[i];
-	}
-	return nullptr;
-}
+#include "AssimpLoader.h"
 
-const aiNode* FindAssimpNode(const std::string& name, const aiNode& root)
+Skeleton::Skeleton()
 {
-	if (name == root.mName.data)
-		return &root;
-	else if (root.mNumChildren > 0)
-	{
-		for (unsigned int i = 0; i < root.mNumChildren; i++)
-		{
-			const aiNode* value = FindAssimpNode(name, *root.mChildren[i]);
-			if (value)
-				return value;
-		}
-		return nullptr;
-	}
-	else
-		return nullptr;
-		
-}*/
-/*
-static glm::mat4 AiToGLMMat4(const aiMatrix4x4& in_mat)
-{
-	glm::mat4 tmp;
-	tmp[0][0] = (float)in_mat.a1;
-	tmp[1][0] = (float)in_mat.b1;
-	tmp[2][0] = (float)in_mat.c1;
-	tmp[3][0] = (float)in_mat.d1;
+	glm::mat4 boneMatrix;
 
-	tmp[0][1] = (float)in_mat.a2;
-	tmp[1][1] = (float)in_mat.b2;
-	tmp[2][1] = (float)in_mat.c2;
-	tmp[3][1] = (float)in_mat.d2;
+	m_rootBones.push_back({ new Bone(), glm::vec3(0.0f, 0.0f, 0.0f) });
+	m_rootBones.back().bone->size = 1.0f;
+	m_rootBones.back().bone->rotation = glm::fquat(1.0f, 0.0f, 0.0f, 0.0f);
+	m_rootBones.back().bone->name = "root";
 
-	tmp[0][2] = (float)in_mat.a3;
-	tmp[1][2] = (float)in_mat.b3;
-	tmp[2][2] = (float)in_mat.c3;
-	tmp[3][2] = (float)in_mat.d3;
-
-	tmp[0][3] = (float)in_mat.a4;
-	tmp[1][3] = (float)in_mat.b4;
-	tmp[2][3] = (float)in_mat.c4;
-	tmp[3][3] = (float)in_mat.d4;
-	return tmp;
-}*/
-/*
-void Skeleton::SkeletonFromAssimp(const aiNode* node, std::unordered_map<std::string, bool>& necessityMap, Bone* parentBone, const aiMesh* mesh)
-{
-	Bone* currentBone = parentBone;
-	if (necessityMap[node->mName.data])
-	{
-		std::cout << "node " << node->mName.data << " is part of the skeleton\n";
-		currentBone = new Bone();
-		parentBone->children.push_back(currentBone);
-		currentBone->name = node->mName.data;
-		aiMatrix4x4t assimpOffsetMatrix = FindAssimpBone(currentBone->name, *mesh)->mOffsetMatrix;
-		currentBone->offsetMatrix = (*(glm::mat4*) & assimpOffsetMatrix.Transpose());
-	}
-	else
-		std::cout << "node " << node->mName.data << " is NOT part of the skeleton\n";
-	for (unsigned int i = 0; i < node->mNumChildren; i++)
-		SkeletonFromAssimp(node->mChildren[i], necessityMap, currentBone, mesh);
-}
-*/
-Skeleton::Skeleton(const std::string& filePath)
-{
-	m_rootBone = new Bone();
-	m_rootBone->offsetMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	m_rootBone->name = "root";
+	std::cout << m_rootBones[0].bone->name << std::endl;
+	boneMatrix = m_rootBones[0].bone->GetMatrix();
+	std::cout << boneMatrix[0][0] << ' ' << boneMatrix[0][1] << ' ' << boneMatrix[0][2] << ' ' << boneMatrix[0][3] << std::endl;
+	std::cout << boneMatrix[1][0] << ' ' << boneMatrix[1][1] << ' ' << boneMatrix[1][2] << ' ' << boneMatrix[1][3] << std::endl;
+	std::cout << boneMatrix[2][0] << ' ' << boneMatrix[2][1] << ' ' << boneMatrix[2][2] << ' ' << boneMatrix[2][3] << std::endl;
+	std::cout << boneMatrix[3][0] << ' ' << boneMatrix[3][1] << ' ' << boneMatrix[3][2] << ' ' << boneMatrix[3][3] << std::endl;
 
 	Bone* chestBone = new Bone();
-	chestBone->offsetMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	chestBone->size = 1.0f;
+	chestBone->rotation = glm::fquat(1.0f, 0.0f, 0.0f, 0.0f);
 	chestBone->name = "chest";
 
+	std::cout << chestBone->name << std::endl;
+	boneMatrix = chestBone->GetMatrix();
+	std::cout << boneMatrix[0][0] << ' ' << boneMatrix[0][1] << ' ' << boneMatrix[0][2] << ' ' << boneMatrix[0][3] << std::endl;
+	std::cout << boneMatrix[1][0] << ' ' << boneMatrix[1][1] << ' ' << boneMatrix[1][2] << ' ' << boneMatrix[1][3] << std::endl;
+	std::cout << boneMatrix[2][0] << ' ' << boneMatrix[2][1] << ' ' << boneMatrix[2][2] << ' ' << boneMatrix[2][3] << std::endl;
+	std::cout << boneMatrix[3][0] << ' ' << boneMatrix[3][1] << ' ' << boneMatrix[3][2] << ' ' << boneMatrix[3][3] << std::endl;
+
 	Bone* headBone = new Bone();
-	headBone->offsetMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	headBone->size = 1.0f;
+	headBone->rotation = glm::fquat(1.0f, 0.0f, 0.0f, 0.0f);
 	headBone->name = "head";
 
+	std::cout << headBone->name << std::endl;
+	boneMatrix = headBone->GetMatrix();
+	std::cout << boneMatrix[0][0] << ' ' << boneMatrix[0][1] << ' ' << boneMatrix[0][2] << ' ' << boneMatrix[0][3] << std::endl;
+	std::cout << boneMatrix[1][0] << ' ' << boneMatrix[1][1] << ' ' << boneMatrix[1][2] << ' ' << boneMatrix[1][3] << std::endl;
+	std::cout << boneMatrix[2][0] << ' ' << boneMatrix[2][1] << ' ' << boneMatrix[2][2] << ' ' << boneMatrix[2][3] << std::endl;
+	std::cout << boneMatrix[3][0] << ' ' << boneMatrix[3][1] << ' ' << boneMatrix[3][2] << ' ' << boneMatrix[3][3] << std::endl;
+
 	Bone* leftBone = new Bone();
-	leftBone->offsetMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 1.0f, 0.0f));
+	leftBone->size = 1.0f;
+	leftBone->rotation = glm::fquat(glm::vec3(0.0f, 0.0f, glm::radians(45.0f)));
 	leftBone->name = "left";
 
+	std::cout << leftBone->name << std::endl;
+	boneMatrix = leftBone->GetMatrix();
+	std::cout << boneMatrix[0][0] << ' ' << boneMatrix[0][1] << ' ' << boneMatrix[0][2] << ' ' << boneMatrix[0][3] << std::endl;
+	std::cout << boneMatrix[1][0] << ' ' << boneMatrix[1][1] << ' ' << boneMatrix[1][2] << ' ' << boneMatrix[1][3] << std::endl;
+	std::cout << boneMatrix[2][0] << ' ' << boneMatrix[2][1] << ' ' << boneMatrix[2][2] << ' ' << boneMatrix[2][3] << std::endl;
+	std::cout << boneMatrix[3][0] << ' ' << boneMatrix[3][1] << ' ' << boneMatrix[3][2] << ' ' << boneMatrix[3][3] << std::endl;
+
 	Bone* rightBone = new Bone();
-	rightBone->offsetMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+	rightBone->size = 1.0f;
+	rightBone->rotation = glm::fquat(glm::vec3(0.0f, 0.0f, glm::radians(-45.0f)));
 	rightBone->name = "right";
 
+	std::cout << rightBone->name << std::endl;
+	boneMatrix = rightBone->GetMatrix();
+	std::cout << boneMatrix[0][0] << ' ' << boneMatrix[0][1] << ' ' << boneMatrix[0][2] << ' ' << boneMatrix[0][3] << std::endl;
+	std::cout << boneMatrix[1][0] << ' ' << boneMatrix[1][1] << ' ' << boneMatrix[1][2] << ' ' << boneMatrix[1][3] << std::endl;
+	std::cout << boneMatrix[2][0] << ' ' << boneMatrix[2][1] << ' ' << boneMatrix[2][2] << ' ' << boneMatrix[2][3] << std::endl;
+	std::cout << boneMatrix[3][0] << ' ' << boneMatrix[3][1] << ' ' << boneMatrix[3][2] << ' ' << boneMatrix[3][3] << std::endl;
+
 	Bone* leftUpBone = new Bone();
-	leftUpBone->offsetMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	leftUpBone->size = 1.0f;
+	leftUpBone->rotation = glm::fquat(glm::vec3(0.0f, 0.0f, glm::radians(-45.0f)));
 	leftUpBone->name = "leftUp";
 
+	std::cout << leftUpBone->name << std::endl;
+	boneMatrix = leftUpBone->GetMatrix();
+	std::cout << boneMatrix[0][0] << ' ' << boneMatrix[0][1] << ' ' << boneMatrix[0][2] << ' ' << boneMatrix[0][3] << std::endl;
+	std::cout << boneMatrix[1][0] << ' ' << boneMatrix[1][1] << ' ' << boneMatrix[1][2] << ' ' << boneMatrix[1][3] << std::endl;
+	std::cout << boneMatrix[2][0] << ' ' << boneMatrix[2][1] << ' ' << boneMatrix[2][2] << ' ' << boneMatrix[2][3] << std::endl;
+	std::cout << boneMatrix[3][0] << ' ' << boneMatrix[3][1] << ' ' << boneMatrix[3][2] << ' ' << boneMatrix[3][3] << std::endl;
+
 	Bone* rightUpBone = new Bone();
-	rightUpBone->offsetMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));// *glm::rotate(glm::mat4(1.0f), 3.1415926f, glm::vec3(0.0f, 1.0f, 0.0f));
+	rightUpBone->size = 1.0f;
+	rightUpBone->rotation = glm::fquat(glm::vec3(0.0f, 0.0f, glm::radians(45.0f)));
 	rightUpBone->name = "rightUp";
 
-	m_rootBone->children.push_back(chestBone);
+	std::cout << rightUpBone->name << std::endl;
+	boneMatrix = rightUpBone->GetMatrix();
+	std::cout << boneMatrix[0][0] << ' ' << boneMatrix[0][1] << ' ' << boneMatrix[0][2] << ' ' << boneMatrix[0][3] << std::endl;
+	std::cout << boneMatrix[1][0] << ' ' << boneMatrix[1][1] << ' ' << boneMatrix[1][2] << ' ' << boneMatrix[1][3] << std::endl;
+	std::cout << boneMatrix[2][0] << ' ' << boneMatrix[2][1] << ' ' << boneMatrix[2][2] << ' ' << boneMatrix[2][3] << std::endl;
+	std::cout << boneMatrix[3][0] << ' ' << boneMatrix[3][1] << ' ' << boneMatrix[3][2] << ' ' << boneMatrix[3][3] << std::endl;
+
+	m_rootBones[0].bone->children.push_back(chestBone);
 
 	chestBone->children.push_back(leftBone);
 	chestBone->children.push_back(rightBone);
@@ -111,49 +98,12 @@ Skeleton::Skeleton(const std::string& filePath)
 
 	rightBone->children.push_back(rightUpBone);
 	leftBone->children.push_back(leftUpBone);
-
-
-	/*m_rootBone = new Bone();
-	m_rootBone->offsetMatrix = glm::mat4(1.0f);
-	m_rootBone->name = "root";
-
-	Assimp::Importer importer;
-	auto assimpScene = importer.ReadFile(filePath.c_str(), NULL);
-
-	if (!assimpScene || assimpScene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !assimpScene->mRootNode) // if is Not Zero
-	{
-		std::cout << "[ASSIMP ERROR] " << importer.GetErrorString() << std::endl;
-		return;
-	}
-
-	if (assimpScene->mNumMeshes != 1)
-		std::cout << "[Skeleton loader] More than one mesh object found\n";
-	auto targetMesh = assimpScene->mMeshes[0];
-		
-	std::unordered_map<std::string, bool> necessityMap; // stores which nodes are necessary for the skeleton
-	unsigned int boneCount = targetMesh->mNumBones;
-	for (unsigned int i = 0; i < boneCount; i++)
-	{
-		if (FindAssimpNode(targetMesh->mBones[i]->mName.data, *assimpScene->mRootNode))
-			necessityMap[targetMesh->mBones[i]->mName.data] = true;
-		else
-			necessityMap[targetMesh->mBones[i]->mName.data] = false;
-	}
-	SkeletonFromAssimp(assimpScene->mRootNode, necessityMap, m_rootBone, targetMesh);
-	std::cout << "skeleton loaded\n";*/
 }
-/*
-void Skeleton::ComputePoseTransformations(Bone* root)
+
+Skeleton::Skeleton(const std::string& filePath)
 {
-	glm::mat4 parentPoseTransform = root->parent ? root->parent->poseTransformation : glm::mat4(1.0f);
-	glm::vec3 currentUp = parentPoseTransform * glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-	glm::vec3 rotationAxis = glm::cross(glm::normalize(root->tail - root->head), currentUp);
-	root->poseTransformation =
-		glm::translate(glm::mat4(1.0f), -root->head + root->tail) *
-		glm::rotate(glm::mat4(1.0f), 3.1415926f, glm::vec3(0.0f, 1.0f, 0.0f));
-	for (Bone* b : root->children)
-		ComputePoseTransformations(b);
-}*/
+	AssimpLoader::LoadSkeleton(filePath, *this);
+}
 
 void Skeleton::FreeBones(Bone* root)
 {
@@ -164,5 +114,7 @@ void Skeleton::FreeBones(Bone* root)
 
 Skeleton::~Skeleton()
 {
-	FreeBones(m_rootBone);
+
+	for (const RootBone& rb : m_rootBones)
+		FreeBones(rb.bone);
 }

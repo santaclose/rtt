@@ -15,32 +15,32 @@ void OutputPanel::UpdateCamera()
 	m_camera->LookAt(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 }
 
-void OutputPanel::DrawSkeleton(const Bone* currentBone, glm::mat4 parentMatrix)
+void OutputPanel::DrawSkeleton(const Skeleton& skeleton)
 {
-	glm::mat4 currentMatrix = parentMatrix * currentBone->animOffsetMatrix * currentBone->offsetMatrix;
-
-	glm::vec3 headPos = parentMatrix * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	glm::vec3 tailPos = currentMatrix * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	float distance = glm::distance(headPos, tailPos);
-
-	glm::mat4 modelMatrix =
-		glm::translate(glm::mat4(1.0f), headPos) *
-		((glm::mat4) glm::quatLookAt(glm::normalize(tailPos - headPos), glm::vec3(0.0f, 0.0f, -1.0f))) *
-		glm::scale(glm::mat4(1.0f), glm::vec3(distance, distance, distance));
-
+	for (const RootBone& rb : skeleton.m_rootBones)
 	{
-		glm::mat4 uMatrix = m_camera->GetMatrix() * modelMatrix;
-		m_shader.SetUniformMatrix4fv("u_Mat", (float*)(&uMatrix));
-		m_boneModel.Draw();
+		DrawBoneTree(rb.bone, glm::translate(glm::mat4(1.0f), rb.offset));
 	}
-	{
-		glm::mat4 uMatrix = m_camera->GetMatrix() * currentMatrix;
-		m_shader.SetUniformMatrix4fv("u_Mat", (float*)(&uMatrix));
-		m_jointModel.Draw();
+}
 
-	}
+void OutputPanel::DrawBoneTree(const Bone* currentBone, const glm::mat4& parentMatrix)
+{
+	glm::mat4 jointModelMatrix = m_camera->GetMatrix() * parentMatrix;
+	m_shader.SetUniformMatrix4fv("u_Mat", (float*)(&jointModelMatrix));
+	m_jointModel.Draw();
+
+	glm::mat4 withBoneTransform = parentMatrix * currentBone->GetMatrix();
+
+	glm::mat4 boneModelMatrix =
+		m_camera->GetMatrix() *
+		parentMatrix *
+		((glm::mat4)currentBone->rotation) *
+		glm::scale(glm::mat4(1.0f), glm::vec3(currentBone->size, currentBone->size, currentBone->size));
+
+	m_shader.SetUniformMatrix4fv("u_Mat", (float*)(&boneModelMatrix));
+	m_boneModel.Draw();
 	for (Bone* b : currentBone->children)
-		DrawSkeleton(b, currentMatrix);
+		DrawBoneTree(b, withBoneTransform);
 }
 
 OutputPanel::OutputPanel(const std::string& name, const glm::vec3& clearColor) : Panel(name, clearColor)
@@ -48,7 +48,8 @@ OutputPanel::OutputPanel(const std::string& name, const glm::vec3& clearColor) :
 	m_boneModel.CreateFromOBJ("assets/bone.obj");
 	m_jointModel.CreateFromOBJ("assets/joint.obj");
 
-	m_skeleton = new Skeleton("assets/untitled.fbx");
+	m_skeleton = new Skeleton();
+	m_assimpSkeleton = new Skeleton("assets/ag.bvh");
 
 	CameraSpecs ss;
 	ss.perspective = true;
@@ -67,6 +68,7 @@ OutputPanel::~OutputPanel()
 {
 	delete m_camera;
 	delete m_skeleton;
+	delete m_assimpSkeleton;
 }
 
 void OutputPanel::OnResize()
@@ -107,5 +109,5 @@ void OutputPanel::Draw()
 
 	m_shader.Bind();
 
-	DrawSkeleton(m_skeleton->m_rootBone, glm::mat4(1.0f));
+	DrawSkeleton(*m_assimpSkeleton);
 }

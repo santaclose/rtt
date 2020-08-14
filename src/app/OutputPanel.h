@@ -13,12 +13,17 @@ public:
     float m_distance = 4.0;
 	Shader m_shader;
 	Camera* m_camera;
+
     Skeleton* m_skeleton;
+    Skeleton* m_assimpSkeleton;
+
     Model m_boneModel;
     Model m_jointModel;
 
     void UpdateCamera();
-    void DrawSkeleton(const Bone* currentBone, glm::mat4 parentMatrix);
+
+    void DrawSkeleton(const Skeleton& skeleton);
+    void DrawBoneTree(const Bone* currentBone, const glm::mat4& parentMatrix);
 
 public:
 	OutputPanel(const std::string& name, const glm::vec3& clearColor);
