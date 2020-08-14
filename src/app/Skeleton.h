@@ -5,27 +5,23 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include "Bone.h"
 
-struct RootBone {
+struct Joint {
 
-	Bone* bone;
-	glm::vec3 offset;
+	glm::mat4 transform;
+	std::string name;
+	std::vector<Joint*> children;
 };
 
 class Skeleton
 {
 public:
-	std::vector<RootBone> m_rootBones;
-	//Bone* m_rootBone = nullptr;
+	Joint* rootJoint = nullptr;
 
 private:
-	//void ComputePoseTransformations(Bone* root);
-	void FreeBones(Bone* root);
-	//void SkeletonFromAssimp(const aiNode* node, std::unordered_map<std::string, bool>& necessityMap, Bone* parentBone, const aiMesh* mesh);
+	void FreeJoints(Joint* root);
 
 public:
-	Skeleton();
 	Skeleton(const std::string& filePath);
 	~Skeleton();
 };

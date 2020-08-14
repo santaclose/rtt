@@ -15,15 +15,13 @@ public:
 	Camera* m_camera;
 
     Skeleton* m_skeleton;
-    Skeleton* m_assimpSkeleton;
 
     Model m_boneModel;
     Model m_jointModel;
 
     void UpdateCamera();
 
-    void DrawSkeleton(const Skeleton& skeleton);
-    void DrawBoneTree(const Bone* currentBone, const glm::mat4& parentMatrix);
+    void DrawSkeleton(const Joint* joint, const glm::mat4& parentMatrix, int drawLevel = 2, int currentLevel = 0);
 
 public:
 	OutputPanel(const std::string& name, const glm::vec3& clearColor);
